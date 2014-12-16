@@ -26,7 +26,7 @@ function FX(ctx) {
 
 FX.prototype.canvasSize = { x: 1000, y: 1000 };
 FX.prototype.backgroundColor = 'black';
-FX.prototype.framesBeforePruning = 1;
+FX.prototype.framesBeforePruning = 100;
 
 FX.prototype.update = function (tick) {
     this.updateAll(tick);
@@ -136,15 +136,15 @@ FX.prototype.resume = function () {
     }
 };
 
-//FX.prototype.onTick = function (callback) {
-//    this.loop.on('update', function(frameCount, deltaTime) {
-//        var tick = {
-//            frames: frameCount,
-//            deltaMillis: deltaTime,
-//            totalMillis: self.elapsedTime + deltaTime
-//        };
-//        callback(tick);
-//    });
-//};
+FX.prototype.onTick = function (callback) {
+    this.loop.on('update', function(frameCount, deltaTime) {
+        var tick = {
+            frames: frameCount,
+            deltaMillis: deltaTime,
+            totalMillis: self.elapsedTime + deltaTime
+        };
+        callback(tick);
+    });
+};
 
 module.exports = FX;

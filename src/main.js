@@ -28,6 +28,7 @@ function dotFactory() {
         velocity = { x: rand(-0.05, 0.05), y: rand(-0.03, -0.4) },
         dot = new Dot(radius,
         function (tick) {
+            //It might be more fun to colorize based on the percentage of particles remaining
             var hue = (tick.totalMillis / 1000 * 60 + hueOffset) % 360;
             return 'hsl(' + hue + ', 75%, 50%)';
         }),
@@ -54,9 +55,15 @@ window.onload = function () {
     var ctx = canvas.getContext('2d'),
         fx = FX(ctx);
 
-    for (var ii = 0; ii < 400; ii++) {
-        fx.addObject(dotFactory());
-    }
+//    for (var ii = 0; ii < 400; ii++) {
+//        fx.addObject(dotFactory());
+//    }
+
+    fx.onTick(function (tick) {
+        if (tick.frames) {
+            fx.addObject(dotFactory());
+        }
+    });
 
     fx.start();
     canvas.addEventListener('click', function () {
