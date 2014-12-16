@@ -26,7 +26,7 @@ function FX(ctx) {
 
 FX.prototype.canvasSize = { x: 1000, y: 1000 };
 FX.prototype.backgroundColor = 'black';
-FX.prototype.framesBeforePruning = 100;
+FX.prototype.framesBeforePruning = 1;
 
 FX.prototype.update = function (tick) {
     this.updateAll(tick);
@@ -81,12 +81,16 @@ FX.prototype.renderAll = function (ctx, tick) {
 };
 
 FX.prototype.pruneTerminatedObjects = function () {
-    [ this.renderables, this.updatables ].forEach(function (collection) {
+    [ this.renderables, this.updatables ].forEach(function (collection, ii) {
         var ii,
             obj;
         for (ii = collection.length - 1; ii >= 0; ii--) {
             obj = collection[ii];
             if (obj.isTerminated) {
+                if (!obj.foo) {
+                    console.log('Pruned: ', obj);
+                    obj.foo = true;
+                }
                 collection.splice(ii, 1);
             }
         }
