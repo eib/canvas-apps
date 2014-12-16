@@ -1,0 +1,23 @@
+{
+  "name": "FX",
+  "version": "1.0.0",
+  "authors": [
+    "Ethan Blackwelder <ethan@eblackwelder.com>"
+  ],
+  "description": "FX",
+  "main": "src/index.js",
+  "keywords": [
+    "SpecialFX",
+    "canvas"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {}
+}

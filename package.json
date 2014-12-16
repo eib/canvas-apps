@@ -1,0 +1,23 @@
+{
+  "name": "FX",
+  "version": "1.0.0",
+  "description": "FX",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "keywords": [
+    "SpecialFX",
+    "Canvas"
+  ],
+  "author": "Ethan Blackwelder <ethan@eblackwelder.com>",
+  "license": "MIT",
+  "dependencies": {
+    "animitter": "^0.5.0",
+    "bower": "^1.3.12",
+    "browserify": "^7.0.1",
+    "del": "^1.1.0",
+    "gulp": "^3.8.10",
+    "watchify": "^2.2.1"
+  }
+}
