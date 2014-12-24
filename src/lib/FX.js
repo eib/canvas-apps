@@ -26,7 +26,7 @@ function FX(ctx) {
 
 FX.prototype.canvasSize = { x: 1000, y: 1000 };
 FX.prototype.backgroundColor = 'black';
-FX.prototype.framesBeforePruning = 100;
+FX.prototype.framesBeforePruning = 1000;
 
 FX.prototype.update = function (tick) {
     this.updateAll(tick);

@@ -1,4 +1,4 @@
-var mixinUpdater = require('./mixinUpdater'),
+var mixinTerminator = require('./mixinTerminator'),
     mixinBoundingBox = require('./mixinBoundingBox');
 
 function intersectsBounds(obj, inBounds) {
@@ -12,12 +12,10 @@ function intersectsBounds(obj, inBounds) {
 }
 
 module.exports = function mixinOutOfBoundsChecking(obj, inBounds, objDimensions, objBoundsOffset) {
-    var boundsChecker = function (tick) {
-        if (!intersectsBounds(obj, inBounds)) {
-            obj.isTerminated = true;
-        }
+    var boundsChecker = function () {
+        return !intersectsBounds(obj, obj.inBounds);
     };
     obj.inBounds = obj.inBounds || inBounds;
     mixinBoundingBox(obj, objDimensions, objBoundsOffset);
-    mixinUpdater(obj, boundsChecker);
+    mixinTerminator(obj, boundsChecker);
 };
