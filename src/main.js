@@ -15,14 +15,11 @@ function rand(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-
 function dotFactory() {
     var sineFreq = rand(300, 1000),
         sineMagnitude = rand(3, 10),
         velocity = { x: rand(-0.05, 0.05), y: rand(-0.03, -0.6) },
+        acceleration = { x: 0, y: 0.00005 };
         dot = new Dot({
             radius: rand(1, 2),
             position: { x: canvas.width / 2, y: canvas.height - rand(20, 40) },
@@ -34,18 +31,16 @@ function dotFactory() {
         }),
         inBounds = { left: 0, right: canvas.width, top: canvas.height, bottom: 0 };
 
-    PHYSX.addVelocity(dot, velocity);
+    PHYSX.addAcceleration(dot, acceleration, velocity);
     PHYSX.addBoundsChecking(dot, inBounds, { width: dot.radius * 2, height: dot.radius * 2 });
     PHYSX.mixin(dot, function (tick) {
         dot.hsl.hue = (dot.hsl.hue - tick.deltaMillis / 1000 * 20) % 360;
-    });
-    PHYSX.mixin(dot, function (tick) {
         dot.hsl.lightness = Math.max(0, dot.hsl.lightness - tick.deltaMillis / 1000 * 50);
     });
+    PHYSX.addHSL(dot, 'hsl', 'fillColor');
     PHYSX.mixinTerminator(dot, function (dot, tick) {
         return dot.hsl.lightness < 1;
     });
-    PHYSX.addHSL(dot, 'hsl', 'fillColor');
     PHYSX.mixin(dot, function (tick) {
         var lastSine = this.lastSine || 0,
             sine = Math.sin(tick.totalMillis / sineFreq) * sineMagnitude;
@@ -59,10 +54,32 @@ window.addEventListener('resize', sizeCanvasToDocument, false);
 
 sizeCanvasToDocument();
 
+var stats = {
+    startTime: 0,
+    currentTime: 0,
+    reset: function () {
+        this.maxDelta = 0;
+        this.minDelta = 999999999;
+        this.frames = 0;
+        this.startTime = this.currentTime;
+    },
+    tick: function (tick) {
+        this.maxDelta = Math.max(this.maxDelta, tick.deltaMillis);
+        this.minDelta = Math.min(this.minDelta, tick.deltaMillis);
+        this.frames++;
+        this.currentTime = tick.totalMillis;
+    },
+    log: function () {
+        var totalTime = this.currentTime - this.startTime;
+        console.log('FPS: ', this.frames / totalTime * 1000 + '(start=' + this.startTime + ', end=' + this.currentTime + ', frames=' + this.frames + ')');
+        this.reset();
+    },
+};
+
 window.onload = function () {
     var ctx = canvas.getContext('2d'),
         fx = FX(ctx),
-        dotsPerFrame = 5;
+        dotsPerFrame = 10;
 
     fx.onTick(function (tick) {
         if (tick.frames) {
@@ -72,8 +89,17 @@ window.onload = function () {
         }
     });
 
+    fx.onTick(function (tick) {
+        stats.tick(tick);
+        if ((stats.frames % 50) === 0) {
+            stats.log();
+        }
+    });
+
+    stats.reset();
     fx.start();
     canvas.addEventListener('click', function () {
+        stats.log();
         fx.toggle();
     }, false);
 };

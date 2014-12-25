@@ -19,14 +19,14 @@ function FX(ctx) {
             totalMillis: self.elapsedTime + deltaTime
         };
         self.update(tick);
-        self.render(ctx, tick);
+        self.render(self.ctx, tick);
         self.elapsedTime += deltaTime;
     });
 }
 
 FX.prototype.canvasSize = { x: 1000, y: 1000 };
 FX.prototype.backgroundColor = 'black';
-FX.prototype.framesBeforePruning = 1000;
+FX.prototype.framesBeforePruning = 100;
 
 FX.prototype.update = function (tick) {
     this.updateAll(tick);
@@ -88,7 +88,7 @@ FX.prototype.pruneTerminatedObjects = function () {
             obj = collection[ii];
             if (obj.isTerminated) {
                 if (!obj.foo) {
-                    console.log('Pruned: ', obj);
+//                    console.log('Pruned: ', obj);
                     obj.foo = true;
                 }
                 collection.splice(ii, 1);
@@ -137,6 +137,7 @@ FX.prototype.resume = function () {
 };
 
 FX.prototype.onTick = function (callback) {
+    var self = this;
     this.loop.on('update', function(frameCount, deltaTime) {
         var tick = {
             frames: frameCount,

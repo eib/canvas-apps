@@ -8,7 +8,6 @@ all: build
 build: gulp-build bundle
 
 watch:
-	$(MAKE) bundle
 	$(MAKE) -j watchify gulp-watch
 
 
@@ -20,10 +19,10 @@ gulp-watch:
 
 
 bundle:
-	browserify src/main.js --outfile ./src/bundle.js --debug
+	browserify src/main.js --outfile dist/bundle.js --debug
 
 watchify:
-	watchify src/main.js --outfile ./src/bundle.js --debug
+	watchify src/main.js --outfile dist/bundle.js --debug
 
 
 .PHONY: all \

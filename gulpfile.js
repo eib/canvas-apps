@@ -3,7 +3,7 @@ var gulp = require('gulp'),
 
 gulp.task('html', function () {
     gulp.src('src/**/*.html')
-        .pipe(smoosher())
+//        .pipe(smoosher())
         .pipe(gulp.dest('dist'));
 });
 
