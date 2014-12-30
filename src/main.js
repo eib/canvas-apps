@@ -1,7 +1,8 @@
 var FX = require('./lib/FX'),
     PHYSX = require('./lib/PHYSX'),
     Dot = require('./lib/Dot'),
-    canvas = document.getElementById('canvas');
+    canvas = document.getElementById('canvas'),
+    hslToColor = require('./lib/util/hslToColor');
 
 function sizeCanvasToDocument() {
     if (canvas) {
@@ -18,8 +19,8 @@ function rand(min, max) {
 function dotFactory() {
     var sineFreq = rand(300, 1000),
         sineMagnitude = rand(3, 10),
-        velocity = { x: rand(-0.05, 0.05), y: rand(-0.03, -0.6) },
-        acceleration = { x: 0, y: 0.00005 };
+        velocity = { x: rand(-0.1, 0.1), y: rand(-0.1, -1) },
+        acceleration = { x: 0, y: 0.0005 },
         dot = new Dot({
             radius: rand(1, 2),
             position: { x: canvas.width / 2, y: canvas.height - rand(20, 40) },
@@ -27,25 +28,28 @@ function dotFactory() {
                 hue: rand(20, 30),
                 saturation: 85,
                 lightness: 65,
-            }
+            },
+            hueFallOff = 20,
+            lightnessFallOff = 40,
         }),
         inBounds = { left: 0, right: canvas.width, top: canvas.height, bottom: 0 };
 
     PHYSX.addAcceleration(dot, acceleration, velocity);
-    PHYSX.addBoundsChecking(dot, inBounds, { width: dot.radius * 2, height: dot.radius * 2 });
     PHYSX.mixin(dot, function (tick) {
-        dot.hsl.hue = (dot.hsl.hue - tick.deltaMillis / 1000 * 20) % 360;
-        dot.hsl.lightness = Math.max(0, dot.hsl.lightness - tick.deltaMillis / 1000 * 50);
-    });
-    PHYSX.addHSL(dot, 'hsl', 'fillColor');
-    PHYSX.mixinTerminator(dot, function (dot, tick) {
-        return dot.hsl.lightness < 1;
-    });
-    PHYSX.mixin(dot, function (tick) {
-        var lastSine = this.lastSine || 0,
+        var lastSine = dot.lastSine || 0,
             sine = Math.sin(tick.totalMillis / sineFreq) * sineMagnitude;
         dot.position.x += sine - lastSine;
-        this.lastSine = sine;
+        dot.lastSine = sine;
+    });
+    PHYSX.addBoundsChecking(dot, inBounds, { width: dot.radius * 2, height: dot.radius * 2 });
+
+    PHYSX.mixin(dot, function (tick) {
+        dot.hsl.hue = (dot.hsl.hue - tick.deltaMillis / 1000 * dot.hueFallOff) % 360;
+        dot.hsl.lightness = Math.max(0, dot.hsl.lightness - tick.deltaMillis / 1000 * dot.lightnessFallOff);
+        dot.fillColor = hslToColor(dot.hsl);
+    });
+    PHYSX.mixinTerminator(dot, function (dot, tick) {
+        return dot.hsl.lightness < 1;
     });
     return dot;
 }
@@ -79,7 +83,7 @@ var stats = {
 window.onload = function () {
     var ctx = canvas.getContext('2d'),
         fx = FX(ctx),
-        dotsPerFrame = 10;
+        dotsPerFrame = 30;
 
     fx.onTick(function (tick) {
         if (tick.frames) {
