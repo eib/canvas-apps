@@ -29,8 +29,8 @@ function dotFactory() {
                 saturation: 85,
                 lightness: 65,
             },
-            hueFallOff = 20,
-            lightnessFallOff = 40,
+            hueFallOff: 20,
+            lightnessFallOff: 40,
         }),
         inBounds = { left: 0, right: canvas.width, top: canvas.height, bottom: 0 };
 
