@@ -1,6 +1,7 @@
 var FX = require('./lib/FX'),
     PHYSX = require('./lib/PHYSX'),
     Dot = require('./lib/Dot'),
+    Pacman = require('./lib/models/Pacman'),
     canvas = document.getElementById('canvas'),
     hslToColor = require('./lib/util/hslToColor');
 
@@ -58,52 +59,17 @@ window.addEventListener('resize', sizeCanvasToDocument, false);
 
 sizeCanvasToDocument();
 
-var stats = {
-    startTime: 0,
-    currentTime: 0,
-    reset: function () {
-        this.maxDelta = 0;
-        this.minDelta = 999999999;
-        this.frames = 0;
-        this.startTime = this.currentTime;
-    },
-    tick: function (tick) {
-        this.maxDelta = Math.max(this.maxDelta, tick.deltaMillis);
-        this.minDelta = Math.min(this.minDelta, tick.deltaMillis);
-        this.frames++;
-        this.currentTime = tick.totalMillis;
-    },
-    log: function () {
-        var totalTime = this.currentTime - this.startTime;
-        console.log('FPS: ', this.frames / totalTime * 1000 + '(start=' + this.startTime + ', end=' + this.currentTime + ', frames=' + this.frames + ')');
-        this.reset();
-    },
-};
-
 window.onload = function () {
     var ctx = canvas.getContext('2d'),
-        fx = FX(ctx),
-        dotsPerFrame = 30;
+        fx = FX(ctx);
 
-    fx.onTick(function (tick) {
-        if (tick.frames) {
-            for (var ii = 0; ii < dotsPerFrame; ii++) {
-                fx.addObject(dotFactory());
-            }
-        }
-    });
+    fx.addObject(new Pacman({
+        radius: 30,
+        position: { x: 300, y: 200 },
+    }));
 
-    fx.onTick(function (tick) {
-        stats.tick(tick);
-        if ((stats.frames % 50) === 0) {
-            stats.log();
-        }
-    });
-
-    stats.reset();
     fx.start();
     canvas.addEventListener('click', function () {
-        stats.log();
         fx.toggle();
     }, false);
 };
