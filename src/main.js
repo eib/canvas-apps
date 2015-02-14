@@ -17,24 +17,26 @@ function rand(min, max) {
 }
 
 function dotFactory() {
-    var sineFreq = rand(300, 1000),
-        sineMagnitude = rand(3, 10),
-        velocity = { x: rand(-0.1, 0.1), y: rand(-0.1, -1) },
+    var sineFreq = rand(300, 500),
+        sineMagnitude = rand(20, 50),
+        velocity = { x: rand(-0.02, 0.02), y: rand(-0.1, -1) },
         acceleration = { x: 0, y: 0.0005 },
         dot = new Dot({
-            radius: rand(1, 2),
-            position: { x: canvas.width / 2, y: canvas.height - rand(20, 40) },
+            radius: rand(4, 5),
+            position: { x: canvas.width / 2 - rand(-1, 1), y: canvas.height - rand(20, 30) },
             hsl: {
-                hue: rand(20, 30),
+                hue: rand(180, 200),
                 saturation: 85,
                 lightness: 65,
+                alpha: 30,
             },
             hueFallOff: 20,
             lightnessFallOff: 40,
         }),
         inBounds = { left: 0, right: canvas.width, top: canvas.height, bottom: 0 };
 
-    PHYSX.addAcceleration(dot, acceleration, velocity);
+    PHYSX.addVelocity(dot, velocity);
+//    PHYSX.addAcceleration(dot, acceleration, velocity);
     PHYSX.mixin(dot, function (tick) {
         var lastSine = dot.lastSine || 0,
             sine = Math.sin(tick.totalMillis / sineFreq) * sineMagnitude;
@@ -83,7 +85,7 @@ var stats = {
 window.onload = function () {
     var ctx = canvas.getContext('2d'),
         fx = FX(ctx),
-        dotsPerFrame = 30;
+        dotsPerFrame = 1;
 
     fx.onTick(function (tick) {
         if (tick.frames) {
