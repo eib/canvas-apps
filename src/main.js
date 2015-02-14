@@ -68,6 +68,22 @@ window.onload = function () {
         position: { x: 300, y: 200 },
     }));
 
+    fx.addObject(new Dot({
+        fillColor: 'white',
+        radius: 10,
+        position: { x: 380 , y: 200 },
+    }));
+    fx.addObject(new Dot({
+        fillColor: 'white',
+        radius: 10,
+        position: { x: 460 , y: 200 },
+    }));
+    fx.addObject(new Dot({
+        fillColor: 'white',
+        radius: 10,
+        position: { x: 540 , y: 200 },
+    }));
+
     fx.start();
     canvas.addEventListener('click', function () {
         fx.toggle();
