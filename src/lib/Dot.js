@@ -11,7 +11,7 @@ Dot.prototype.radius = 5;
 Dot.prototype.fillColor = 'red';
 Dot.prototype.position = { x: 0, y: 0 };
 
-Dot.prototype.render = function (ctx, tick) {
+Dot.prototype.render = function drawADot(ctx, tick) {
     ctx.fillStyle = this.fillColor;
     ctx.beginPath();
     ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);

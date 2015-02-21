@@ -61,12 +61,13 @@ sizeCanvasToDocument();
 
 window.onload = function () {
     var ctx = canvas.getContext('2d'),
-        fx = FX(ctx);
+        fx = FX(ctx),
+        pacman = new Pacman({
+            radius: 30,
+            position: { x: 300, y: 200 },
+        });
 
-    fx.addObject(new Pacman({
-        radius: 30,
-        position: { x: 300, y: 200 },
-    }));
+    fx.addObject(pacman);
 
     fx.addObject(new Dot({
         fillColor: 'white',
@@ -83,6 +84,10 @@ window.onload = function () {
         radius: 10,
         position: { x: 540 , y: 200 },
     }));
+
+//    PHYSX.mixin(pacman, function (tick) {
+//
+//    });
 
     fx.start();
     canvas.addEventListener('click', function () {
