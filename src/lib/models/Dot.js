@@ -1,4 +1,4 @@
-var extend = require('./util/extend');
+var extend = require('extend');
 
 function Dot(props) {
     if (!(this instanceof Dot)) {

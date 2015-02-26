@@ -1,9 +1,10 @@
-var FX = require('./lib/FX'),
-    PHYSX = require('./lib/PHYSX'),
-    Dot = require('./lib/Dot'),
+var FX = require('FX'),
+    PHYSX = require('PHYSX'),
+    extend = require('extend'),
+    Dot = require('./lib/models/Dot'),
     Pacman = require('./lib/models/Pacman'),
     canvas = document.getElementById('canvas'),
-    hslToColor = require('./lib/util/hslToColor');
+    colorToString = require('./lib/util/colorToString');
 
 function sizeCanvasToDocument() {
     if (canvas) {
@@ -47,7 +48,7 @@ function dotFactory() {
     PHYSX.mixin(dot, function (tick) {
         dot.hsl.hue = (dot.hsl.hue - tick.deltaMillis / 1000 * dot.hueFallOff) % 360;
         dot.hsl.lightness = Math.max(0, dot.hsl.lightness - tick.deltaMillis / 1000 * dot.lightnessFallOff);
-        dot.fillColor = hslToColor(dot.hsl);
+        dot.fillColor = colorToString(dot.hsl);
     });
     PHYSX.mixinTerminator(dot, function (dot, tick) {
         return dot.hsl.lightness < 1;
@@ -62,28 +63,20 @@ sizeCanvasToDocument();
 window.onload = function () {
     var ctx = canvas.getContext('2d'),
         fx = FX(ctx),
+        dotDefaults = {
+            fillColor: 'white',
+            radius: 10,
+        },
         pacman = new Pacman({
             radius: 30,
             position: { x: 300, y: 200 },
         });
 
-    fx.addObject(pacman);
+    fx.addObject(new Dot(extend({ position: { x: 380, y: 200 } }, dotDefaults)));
+    fx.addObject(new Dot(extend({ position: { x: 460, y: 200 } }, dotDefaults)));
+    fx.addObject(new Dot(extend({ position: { x: 540, y: 200 } }, dotDefaults)));
 
-    fx.addObject(new Dot({
-        fillColor: 'white',
-        radius: 10,
-        position: { x: 380 , y: 200 },
-    }));
-    fx.addObject(new Dot({
-        fillColor: 'white',
-        radius: 10,
-        position: { x: 460 , y: 200 },
-    }));
-    fx.addObject(new Dot({
-        fillColor: 'white',
-        radius: 10,
-        position: { x: 540 , y: 200 },
-    }));
+    fx.addObject(pacman);
 
 //    PHYSX.mixin(pacman, function (tick) {
 //

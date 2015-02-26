@@ -1,4 +1,4 @@
-var extend = require('../util/extend');
+var extend = require('extend');
 
 function Pacman(props) {
     if (!(this instanceof Pacman)) {
