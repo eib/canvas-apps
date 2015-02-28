@@ -14,7 +14,7 @@ Pacman.prototype.maxMouthAngle = 60; //in degrees
 Pacman.prototype.radius = 5;
 Pacman.prototype.fillColor = 'yellow';
 Pacman.prototype.position = { x: 0, y: 0 };
-Pacman.prototype.velocity = { x: 100, y: 0 }; //px per second
+Pacman.prototype.velocity = { x: 0, y: 0 }; //px per second
 
 Pacman.prototype.update = function (tick) {
     var angleVelocity = 2 * this.maxMouthAngle * this.chompSpeed;

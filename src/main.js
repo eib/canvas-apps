@@ -31,6 +31,7 @@ window.onload = function () {
         pacman = new Pacman({
             radius: 30,
             position: { x: 300, y: 200 },
+            velocity: { x: 0, y: 0 },
         });
 
     fx.addObject(new Dot(extend({ position: { x: 380, y: 200 } }, dotDefaults)));
@@ -39,11 +40,45 @@ window.onload = function () {
 
     fx.addObject(pacman);
 
-//    PHYSX.mixin(pacman, function (tick) {
-//
-//    });
+    var keysPressed = {};
+    var speed = 300;
+
+    PHYSX.mixin(pacman, function (tick) {
+        var x = 0;
+        var y = 0;
+        if (keysPressed[37]) { //left
+            x = x - speed;
+        }
+        if (keysPressed[38]) { //up
+            y = y - speed;
+        }
+        if (keysPressed[39]) { //right
+            x = x + speed;
+        }
+        if (keysPressed[40]) { //down
+            y = y + speed;
+        }
+        pacman.velocity = { x: x, y: y };
+    });
+
+    //left: 37
+    //up: 38
+    //right: 39
+    //down: 40
 
     fx.start();
+    document.onkeydown = function (evt) {
+        var event = window.event ? window.event : evt;
+        console.log("Down: " + event.keyCode);
+        keysPressed[event.keyCode] = true;
+    };
+
+    document.onkeyup = function (evt) {
+        var event = window.event ? window.event : evt;
+        console.log("Up: " + event.keyCode);
+        keysPressed[event.keyCode] = false;
+    };
+
     canvas.addEventListener('click', function () {
         fx.toggle();
     }, false);
