@@ -36,15 +36,24 @@ Pacman.prototype.render = function drawPacman(ctx, tick) {
     var mouthAngle = this.mouthAngle * 2 * Math.PI / 360,
         isMouthClosed = mouthAngle <= 0,
         startAngle = isMouthClosed ? 0 : mouthAngle,
-        endAngle = isMouthClosed ? 2 * Math.PI : -mouthAngle;
+        endAngle = isMouthClosed ? 2 * Math.PI : -mouthAngle,
+        isFacingLeft = (this.velocity.x < 0),
+        xScale = isFacingLeft ? -1 : 1;
+
+    ctx.save();
 
     ctx.fillStyle = this.fillColor;
+    ctx.translate(this.position.x, this.position.y);
+    ctx.scale(xScale, 1);
+
     ctx.beginPath();
-    ctx.moveTo(this.position.x, this.position.y);
-    ctx.arc(this.position.x, this.position.y, this.radius, startAngle, endAngle, false);
-    ctx.lineTo(this.position.x, this.position.y);
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, this.radius, startAngle, endAngle, false);
+    ctx.lineTo(0, 0);
+
     ctx.closePath();
     ctx.fill();
+    ctx.restore();
 };
 
 module.exports = Pacman;
