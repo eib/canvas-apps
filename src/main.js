@@ -21,27 +21,36 @@ window.addEventListener('resize', sizeCanvasToDocument, false);
 
 sizeCanvasToDocument();
 
+function dotFactory(position) {
+    var dot = new Dot({
+        position: position,
+        fillColor: 'white',
+        radius: 10,
+    });
+    return dot;
+}
+
 window.onload = function () {
     var ctx = canvas.getContext('2d'),
         fx = FX(ctx),
-        dotDefaults = {
-            fillColor: 'white',
-            radius: 10,
-        },
         pacman = new Pacman({
             radius: 30,
             position: { x: 300, y: 200 },
             velocity: { x: 0, y: 0 },
         });
 
-    fx.addObject(new Dot(extend({ position: { x: 380, y: 200 } }, dotDefaults)));
-    fx.addObject(new Dot(extend({ position: { x: 460, y: 200 } }, dotDefaults)));
-    fx.addObject(new Dot(extend({ position: { x: 540, y: 200 } }, dotDefaults)));
-
-    fx.addObject(pacman);
-
+    var dots = [];
+    var numDots = 30;
     var keysPressed = {};
     var speed = 300;
+    var ii;
+    var dotDistance = 80;
+
+    for (ii = 0; ii < numDots; ii = ii + 1) {
+        var position = { x: ii * dotDistance + 50, y: 200 };
+        var dot = dotFactory(position);
+        dots.push(dot);
+    }
 
     PHYSX.mixin(pacman, function (tick) {
         var x = 0;
@@ -60,6 +69,19 @@ window.onload = function () {
         }
         pacman.velocity = { x: x, y: y };
     });
+
+    dots.forEach(function (dot) {
+        PHYSX.mixinTerminator(dot, function (tick) {
+            var dx = pacman.position.x - dot.position.x;
+            var dy = pacman.position.y - dot.position.y;
+            var distance = Math.sqrt((dx * dx) + (dy * dy));
+            var isEaten = distance < pacman.radius - dot.radius;
+            return isEaten;
+        });
+        fx.addObject(dot);
+    });
+
+    fx.addObject(pacman);
 
     //left: 37
     //up: 38
