@@ -1,6 +1,5 @@
 CD=$(shell pwd)
-BROWSERIFY=$(CD)/node_modules/.bin/browserify
-WATCHIFY=$(CD)/node_modules/.bin/watchify
+WEBPACK=$(CD)/node_modules/.bin/webpack
 GULP=$(CD)/node_modules/.bin/gulp
 
 all: build
@@ -8,7 +7,7 @@ all: build
 build: gulp-build bundle
 
 watch:
-	$(MAKE) -j watchify gulp-watch
+	$(MAKE) -j webpack-watch gulp-watch
 
 
 gulp-build:
@@ -19,13 +18,13 @@ gulp-watch:
 
 
 bundle:
-	browserify src/main.js --outfile dist/bundle.js --debug
+	$(WEBPACK)
 
-watchify:
-	watchify src/main.js --outfile dist/bundle.js --debug
+webpack-watch:
+	$(WEBPACK) --watch
 
 
 .PHONY: all \
     build watch \
     gulp-build gulp-watch \
-    bundle watchify
+    bundle webpack-watch
