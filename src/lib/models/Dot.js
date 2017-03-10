@@ -8,7 +8,7 @@ function Dot(props) {
 }
 
 Dot.prototype.radius = 5;
-Dot.prototype.fillColor = 'red';
+Dot.prototype.fillColor = 'gray';
 Dot.prototype.position = { x: 0, y: 0 };
 
 Dot.prototype.render = function drawADot(ctx, tick) {

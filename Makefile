@@ -1,4 +1,4 @@
-CD=$(shell pwd)
+CD?=$(shell pwd)
 WEBPACK=$(CD)/node_modules/.bin/webpack
 GULP=$(CD)/node_modules/.bin/gulp
 
@@ -7,21 +7,21 @@ all: build
 build: gulp-build bundle
 
 watch:
-	$(MAKE) -j webpack-watch gulp-watch
+	"$(MAKE)" -j webpack-watch gulp-watch
 
 
 gulp-build:
-	$(GULP)
+	"$(GULP)"
 
 gulp-watch:
-	$(GULP) watch
+	"$(GULP)" watch
 
 
 bundle:
-	$(WEBPACK)
+	"$(WEBPACK)"
 
 webpack-watch:
-	$(WEBPACK) --watch
+	"$(WEBPACK)" --watch
 
 
 .PHONY: all \

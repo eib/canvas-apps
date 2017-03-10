@@ -4,7 +4,8 @@ var path = require('path'),
 module.exports = {
     entry: path.join(baseDir, 'src/main.js'),
     output: {
-        path: path.join(baseDir, 'js'),
+        path: path.join(baseDir, 'dist', 'js'),
         filename: 'bundle.js',
-    }
+    },
+    devtool: 'source-map',
 };
