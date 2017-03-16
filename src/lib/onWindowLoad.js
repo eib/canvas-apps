@@ -23,30 +23,52 @@ module.exports = function (canvas) {
             fx.addObject(dot);
         });
 
-        var edges = Array(numTowns); //2D edge matrix (numTowns x numTowns)
+        var paths = Array(numTowns); //2D edge matrix (numTowns x numTowns)
         for (var ii = 0; ii < numTowns; ii++) {
-            edges[ii] = new Array(numTowns).fill(false);
+            paths[ii] = new Array(numTowns).fill(false);
         }
-        edges[0][4] = true;
-        edges[4][6] = true;
-        edges[6][14] = true;
+        paths[0][3] = { controlPoints: [100, 200, 200, 200] };
+        paths[4][6] = { controlPoints: [] };
+        paths[6][14] = { controlPoints: [350, 250] };
 
-        function drawEdge(town1, town2, ctx) {
+        paths.forEach(function (row, ii) {
+            row.forEach(function (path, jj) {
+                var startTown = towns[ii],
+                    endTown = towns[jj],
+                    controlPoints = path && path.controlPoints || [],
+                    strokeMethods = {
+                        2: ctx.lineTo,
+                        4: ctx.quadraticCurveTo,
+                        6: ctx.bezierCurveTo,
+                    };
+                controlPoints.push(endTown.position.x);
+                controlPoints.push(endTown.position.y);
+                if (path) {
+                    path.start = startTown.position;
+                    path.pathMethod = strokeMethods[controlPoints.length] || ctx.lineTo;
+                    path.controlPoints = controlPoints;
+                }
+            });
+        });
+
+        function drawPath(path, ctx) {
             ctx.lineWidth = 5;
             ctx.strokeStyle = '#EEEEAA';
             ctx.beginPath();
-            ctx.moveTo(town1.position.x, town1.position.y);
-            ctx.lineTo(town2.position.x, town2.position.y);
+            ctx.moveTo(path.start.x, path.start.y);
+            path.pathMethod.apply(ctx, path.controlPoints);
             ctx.stroke();
         }
 
         fx.addObject({
-            render: function drawAllEdges(ctx) {
-                for (var ii = 0; ii < edges.length; ii++) {
-                    var row = edges[ii];
+            render: function drawAllPaths(ctx) {
+                var row, path;
+                for (var ii = 0; ii < paths.length; ii++) {
+                    row = paths[ii];
                     for (var jj = 0; jj < row.length; jj++) {
-                        if (row[jj]) {
-                            drawEdge(towns[ii], towns[jj], ctx);
+                        path = row[jj];
+                        if (path) {
+                            drawPath(path, ctx);
                         }
                     }
                 }
