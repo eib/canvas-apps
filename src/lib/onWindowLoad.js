@@ -1,6 +1,7 @@
 var FX = require('FX'),
     PHYSX = require('PHYSX'),
-    Dot = require('./models/Dot'),
+    Town = require('./models/town'),
+    //Piece = require('./models/piece'), //Want a "piece factory"?
     rand = require('./rand');
 
 module.exports = function (canvas) {
@@ -12,24 +13,26 @@ module.exports = function (canvas) {
 
         var towns = [];
         for (var ii = 0; ii < numTowns; ii++) {
-            var x = Math.floor(ii / 3) * 100 + 100,
-                y = (ii % 3) * 100 + 100,
+            var x = Math.floor(ii / 3) * 200 + 200,
+                y = (ii % 3) * 200 + 200,
                 position = { x: x, y: y},
-                piece = new Dot({ position: position });
+                piece = new Town({
+                    radius: 25,
+                    fillColor: '#EEEEAA',
+                    position: position,
+                    name: 'Town' + ii,
+                    magic: (ii % 2) === 0
+                });
             towns.push(piece);
         }
-
-        towns.forEach(function (dot) {
-            fx.addObject(dot);
-        });
 
         var paths = Array(numTowns); //2D edge matrix (numTowns x numTowns)
         for (var ii = 0; ii < numTowns; ii++) {
             paths[ii] = new Array(numTowns).fill(false);
         }
-        paths[0][3] = { controlPoints: [100, 200, 200, 200] };
-        paths[4][6] = { controlPoints: [] };
-        paths[6][14] = { controlPoints: [350, 250] };
+        paths[0][3] = { controlPoints: [200, 400, 400, 400] };
+        paths[4][6] = { };
+        paths[6][14] = { controlPoints: [700, 500] };
 
         paths.forEach(function (row, ii) {
             row.forEach(function (path, jj) {
@@ -65,7 +68,7 @@ module.exports = function (canvas) {
                 var row, path;
                 for (var ii = 0; ii < paths.length; ii++) {
                     row = paths[ii];
-                    for (var jj = 0; jj < row.length; jj++) {
+                    for (var jj = ii; jj < row.length; jj++) {
                         path = row[jj];
                         if (path) {
                             drawPath(path, ctx);
@@ -73,6 +76,10 @@ module.exports = function (canvas) {
                     }
                 }
             }
+        });
+
+        towns.forEach(function (dot) {
+            fx.addObject(dot);
         });
 
         //document.body.style.backgroundImage = "url('resources/forest-bg.jpg')";
