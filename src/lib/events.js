@@ -4,11 +4,10 @@ var FX = require('FX'),
 
 module.exports = function (canvas) {
     var ctx = canvas.getContext('2d'),
-        fx = FX(ctx);
+        fx = FX(ctx),
+        board = new Board(fx);
 
     var onWindowLoad = function () {
-        var board = new Board(fx);
-
         fx.addObject(board);
         fx.clearCanvas = true;
         fx.backgroundColor = 'black';
@@ -30,8 +29,11 @@ module.exports = function (canvas) {
         keysPressed[keyCode] = false;
     };
 
-    var onSingleClick = function () {
-        fx.toggle();
+    var onSingleClick = function (location) {
+        console.log("Touch event:", location);
+        if (!board.handleSingleClick(location)) {
+            fx.toggle();
+        }
     };
 
     return {

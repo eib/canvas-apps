@@ -6,14 +6,29 @@ function Town(props) {
         return new Town(props);
     }
     extend(this, props);
+    if (this.magic) {
+
+    }
+
 }
 //TODO: extend Dot (but I don't remember how the syntax goes offhand)
+
+Town.prototype.name = 'Unassigned';
+Town.prototype.index = -1;
+Town.prototype.magic = false;
 
 Town.prototype.radius = 5;
 Town.prototype.fillColor = 'gray';
 Town.prototype.position = { x: 0, y: 0 };
 Town.prototype.font = '24px serif';
 Town.prototype.fontColor = 'gray';
+Town.prototype.selectionRadiusMultipler = 1.3;
+Town.prototype.magicSelectionRadiusMultipler = 1.75;
+
+Town.prototype.getSelectionRadius = function () {
+    var multiplier = this.magic ? this.magicSelectionRadiusMultipler : this.selectionRadiusMultipler;
+    return this.radius * multiplier;
+};
 
 Town.prototype.render = function drawADot(ctx, tick) {
     ctx.save();
