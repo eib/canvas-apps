@@ -1,5 +1,5 @@
 var Town = require('./town'),
-//Piece = require('./models/piece'), //Want a "piece factory"?
+    Piece = require('./piece'),
     rand = require('../rand');
 
 function Board(fx) {
@@ -9,20 +9,47 @@ function Board(fx) {
     this.fx = fx;
     this.towns = this.generateTowns();
     this.paths = this.generatePaths(this.towns, fx.ctx); //2D edge matrix (numTowns x numTowns), only top-right half of the matrix is populated
+    this.pieces = [];
 }
 
 /* Events */
 
 Board.prototype.handleSingleClick = function (location) {
     var selectedTown = this.towns.find(function (town) {
-        var distX = town.position.x - location.x,
-            distY = town.position.y - location.y;
-        return Math.sqrt(distX * distX + distY * distY) < town.getSelectionRadius();
-    }, this);
+            var distX = town.position.x - location.x,
+                distY = town.position.y - location.y;
+            return Math.sqrt(distX * distX + distY * distY) < town.getSelectionRadius();
+        }, this);
     if (selectedTown) {
-        console.log("Town selected: ", selectedTown);
+        var selectedPiece = selectedTown.pieces.find(function (piece) {
+                var distX = piece.position.x - location.x,
+                    distY = piece.position.y - location.y;
+                return Math.sqrt(distX * distX + distY * distY) < piece.getSelectionRadius();
+            });
+        if (selectedPiece) {
+            console.log("Piece selected:", selectedPiece);
+            this.removePieceFromTown(selectedPiece, selectedTown);
+        } else {
+            console.log("Town selected:", selectedTown);
+            this.createPieceAtTown(selectedTown);
+        }
     }
     return !!selectedTown;
+};
+
+Board.prototype.removePieceFromTown = function (piece, town) {
+    town.removePiece(piece);
+    this.pieces.splice(this.pieces.indexOf(piece), 1);
+};
+
+Board.prototype.createPieceAtTown = function (town) {
+    var piece = new Piece({
+        position: town.position,
+        town: town,
+        //TODO: "team" implies color/fillColor
+    });
+    town.pieces.push(piece);
+    this.pieces.push(piece);
 };
 
 /* Rendering */
@@ -30,7 +57,14 @@ Board.prototype.handleSingleClick = function (location) {
 Board.prototype.render = function (ctx) {
     this.drawAllPaths(ctx);
     this.drawTowns(ctx);
+    this.drawPieces(ctx);
 };
+
+Board.prototype.drawPieces = function (ctx) {
+    this.pieces.forEach(function (piece) {
+        piece.render(ctx);
+    });
+}
 
 Board.prototype.drawTowns = function (ctx) {
     this.towns.forEach(function (town) {

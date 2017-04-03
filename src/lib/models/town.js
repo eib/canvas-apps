@@ -1,21 +1,16 @@
-var extend = require('extend'),
-    Dot = require('./Dot');
+var extend = require('extend');
 
 function Town(props) {
     if (!(this instanceof Town)) {
         return new Town(props);
     }
     extend(this, props);
-    if (this.magic) {
-
-    }
-
 }
-//TODO: extend Dot (but I don't remember how the syntax goes offhand)
 
 Town.prototype.name = 'Unassigned';
 Town.prototype.index = -1;
 Town.prototype.magic = false;
+Town.prototype.pieces = []; //Pieces that have been stationed at this town
 
 Town.prototype.radius = 5;
 Town.prototype.fillColor = 'gray';
@@ -30,7 +25,7 @@ Town.prototype.getSelectionRadius = function () {
     return this.radius * multiplier;
 };
 
-Town.prototype.render = function drawADot(ctx, tick) {
+Town.prototype.render = function (ctx, tick) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
     ctx.fillStyle = this.fillColor;
@@ -49,6 +44,10 @@ Town.prototype.render = function drawADot(ctx, tick) {
     ctx.font = this.font;
     ctx.fillStyle = this.fontColor;
     ctx.fillText(this.name, this.position.x + this.radius, this.position.y);
+};
+
+Town.prototype.removePiece = function (piece) {
+    this.pieces.splice(this.pieces.indexOf(piece), 1);
 };
 
 module.exports = Town;
