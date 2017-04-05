@@ -10,6 +10,7 @@ function Board(fx) {
     this.towns = this.generateTowns();
     this.paths = this.generatePaths(this.towns, fx.ctx); //2D edge matrix (numTowns x numTowns), only top-right half of the matrix is populated
     this.pieces = [];
+    this.lastSelectedPiece = null;
 }
 
 /* Events */
@@ -28,7 +29,12 @@ Board.prototype.handleSingleClick = function (location) {
             });
         if (selectedPiece) {
             console.log("Piece selected:", selectedPiece);
-            this.removePieceFromTown(selectedPiece, selectedTown);
+            if (this.lastSelectedPiece && this.lastSelectedPiece !== selectedPiece) {
+                this.lastSelectedPiece.isSelected = false;
+            }
+            //this.removePieceFromTown(selectedPiece, selectedTown);
+            selectedPiece.isSelected = !selectedPiece.isSelected;
+            this.lastSelectedPiece = selectedPiece;
         } else {
             console.log("Town selected:", selectedTown);
             this.createPieceAtTown(selectedTown);
@@ -44,11 +50,11 @@ Board.prototype.removePieceFromTown = function (piece, town) {
 
 Board.prototype.createPieceAtTown = function (town) {
     var piece = new Piece({
-        position: town.position,
+        position: { x: town.position.x, y: town.position.y }, //TODO: "clone" position method?
         town: town,
         //TODO: "team" implies color/fillColor
     });
-    town.pieces.push(piece);
+    town.addPiece(piece);
     this.pieces.push(piece);
 };
 
@@ -64,7 +70,7 @@ Board.prototype.drawPieces = function (ctx) {
     this.pieces.forEach(function (piece) {
         piece.render(ctx);
     });
-}
+};
 
 Board.prototype.drawTowns = function (ctx) {
     this.towns.forEach(function (town) {
