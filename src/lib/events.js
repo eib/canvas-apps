@@ -8,6 +8,8 @@ module.exports = function (canvas) {
         fx = FX(ctx),
         board = new Board(fx);
 
+    global.board = board;
+
     var onWindowLoad = function () {
         fx.addObject(board);
         fx.clearCanvas = true;
