@@ -1,6 +1,7 @@
 var FX = require('FX'),
     PHYSX = require('PHYSX'),
-    Board = require('./models/board');
+    Board = require('./models/board'),
+    keyCodes = require('./keyCodes');
 
 module.exports = function (canvas) {
     var ctx = canvas.getContext('2d'),
@@ -15,10 +16,6 @@ module.exports = function (canvas) {
         fx.start();
     };
 
-    //left: 37
-    //up: 38
-    //right: 39
-    //down: 40
     var keysPressed = {};
     var onKeyDown = function (keyCode) {
         console.log("Key Down: " + keyCode);
@@ -27,6 +24,9 @@ module.exports = function (canvas) {
     var onKeyUp = function (keyCode) {
         console.log("Key Up: " + keyCode);
         keysPressed[keyCode] = false;
+        if (keyCode == keyCodes.delete) {
+            board.onDelete();
+        }
     };
 
     var onSingleClick = function (location) {

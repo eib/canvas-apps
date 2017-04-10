@@ -58,6 +58,13 @@ Board.prototype.createPieceAtTown = function (town) {
     this.pieces.push(piece);
 };
 
+Board.prototype.onDelete = function () {
+    if (this.lastSelectedPiece) {
+        this.removePieceFromTown(this.lastSelectedPiece, this.lastSelectedPiece.town); //TODO: LoD
+        this.lastSelectedPiece = null;
+    }
+};
+
 /* Rendering */
 
 Board.prototype.render = function (ctx) {

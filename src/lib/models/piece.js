@@ -12,6 +12,7 @@ Piece.prototype.fillColor = 'red';
 Piece.prototype.selectedFillColor = 'blue';
 Piece.prototype.radius = 5; //maybe an image instead? (or some kind of "shape" geometry?)
 Piece.prototype.isSelected = false;
+Piece.prototype.town = null;
 
 Piece.prototype.render = function (ctx, tick) {
     ctx.save();
