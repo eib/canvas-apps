@@ -11,6 +11,7 @@ function Board(fx) {
     this.paths = this.generatePaths(this.towns, fx.ctx); //2D edge matrix (numTowns x numTowns), both halves (top right/bottom left) are populated
     this.pieces = [];
     this.lastSelectedPiece = null;
+    this.lastAnimation = Promise.resolve();
 }
 
 /* Events */
@@ -70,6 +71,9 @@ Board.prototype.createPieceAtTown = function (town) {
 };
 
 Board.prototype.movePieceToTown = function (piece, town) {
+    this.queueAnimation(function () {
+
+    });
     var oldTown = piece.town;
     oldTown.removePiece(piece);
     piece.town = town;
@@ -181,10 +185,14 @@ Board.prototype.generatePaths = function (towns, ctx) {
             }
         });
     });
+
+    function flipPath(path) {
+        return path; //TODO: implement
+    }
     for (var rowIndex = 0; rowIndex < paths.length; rowIndex++) {
         var row = paths[rowIndex];
         for (var columnIndex = rowIndex; columnIndex < row.length; columnIndex++) {
-            paths[columnIndex][rowIndex] = paths[rowIndex][columnIndex];
+            paths[columnIndex][rowIndex] = flipPath(paths[rowIndex][columnIndex]);
         }
     }
     return paths;
