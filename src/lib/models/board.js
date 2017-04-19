@@ -219,8 +219,8 @@ Board.prototype.generatePaths = function (towns, ctx) {
             controlPoints.push(x);
             controlPoints.push(y);
         }
-        controlPoints.push(path.start.position.x);
-        controlPoints.push(path.start.position.y);
+        controlPoints.push(path.start.x);
+        controlPoints.push(path.start.y);
 
         return { //TODO: Path.prototype.flip()
             start: path.end,

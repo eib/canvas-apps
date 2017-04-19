@@ -18,7 +18,7 @@ PathAnimation.prototype.update = function (tick) {
         this.elapsedMillis += tick.deltaMillis;
     }
     this.hasStarted = true;
-    var percentElapsed = Math.max(100, Math.min(0, this.elapsedMillis / this.animationDuration));
+    var percentElapsed = Math.min(100, Math.max(0, this.elapsedMillis / this.animationDuration));
 
     this.renderable.position = this.calculatePosition(percentElapsed);
     var isComplete = this.elapsedMillis >= this.animationDuration;
