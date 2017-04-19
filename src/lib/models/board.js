@@ -1,6 +1,7 @@
 var Town = require('./town'),
     Piece = require('./piece'),
-    rand = require('../rand');
+    rand = require('../rand'),
+    PathAnimation = require('./pathAnimation');
 
 function Board(fx) {
     if (!(this instanceof Board)) {
@@ -70,19 +71,23 @@ Board.prototype.createPieceAtTown = function (town) {
     this.pieces.push(piece);
 };
 
-Board.prototype.movePieceToTown = function (piece, town) {
-    this.queueAnimation(function () {
-
+Board.prototype.movePieceToTown = function (piece, newTown) {
+    var oldTown = piece.town,
+        path = this.getPath(piece.town, newTown),
+        animation = new PathAnimation(piece, path);
+    this.queueAnimation(animation, function () {
+        oldTown.removePiece(piece);
+        piece.town = newTown;
+        newTown.addPiece(piece);
     });
-    var oldTown = piece.town;
-    oldTown.removePiece(piece);
-    piece.town = town;
-    town.addPiece(piece);
-    //TODO: animate
+};
+
+Board.prototype.getPath = function (town1, town2) {
+    return town1 && town2 && this.paths[town1.index][town2.index];
 };
 
 Board.prototype.areConnected = function (town1, town2) {
-    return !!this.paths[town1.index][town2.index];
+    return !!this.getPath(town1, town2);
 };
 
 Board.prototype.onDelete = function () {
@@ -90,6 +95,22 @@ Board.prototype.onDelete = function () {
         this.removePieceFromTown(this.lastSelectedPiece, this.lastSelectedPiece.town); //TODO: LoD
         this.lastSelectedPiece = null;
     }
+};
+
+/* Animations */
+
+Board.prototype.queueAnimation = function (animation, onComplete) {
+    var fx = this.fx;
+    this.lastAnimation = this.lastAnimation.then(new Promise(function (resolve, reject) {
+        animation.onComplete = function () {
+            onComplete(); //Note: "onComplete" should be synchronous (if you resolve to a Promise, is the resolved Promise resolved, too?)
+            resolve();
+        };
+        fx.addObject(animation);
+    })).catch(function (err) {
+        console.log('Uncaught animation error:', err);
+        window.alert('Uncaught animation error: ' + (err.message || err));
+    });
 };
 
 /* Rendering */
@@ -182,12 +203,31 @@ Board.prototype.generatePaths = function (towns, ctx) {
                 path.start = startTown.position;
                 path.pathMethod = strokeMethods[controlPoints.length] || ctx.lineTo;
                 path.controlPoints = controlPoints;
+                path.end = { x: endTown.position.x, y: endTown.position.y };
             }
         });
     });
 
     function flipPath(path) {
-        return path; //TODO: implement
+        if (!path) {
+            return path;
+        }
+        var controlPoints = [];
+        for (ii = path.controlPoints.length - 2; ii > 0; ii -= 2) {
+            var x = path.controlPoints[ii - 1],
+                y = path.controlPoints[ii];
+            controlPoints.push(x);
+            controlPoints.push(y);
+        }
+        controlPoints.push(path.start.position.x);
+        controlPoints.push(path.start.position.y);
+
+        return { //TODO: Path.prototype.flip()
+            start: path.end,
+            end: path.start,
+            pathMethod: path.pathMethod,
+            controlPoints: controlPoints,
+        };
     }
     for (var rowIndex = 0; rowIndex < paths.length; rowIndex++) {
         var row = paths[rowIndex];
