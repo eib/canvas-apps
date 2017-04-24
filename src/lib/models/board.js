@@ -183,7 +183,7 @@ Board.prototype.generatePaths = function (towns, ctx) {
     for (var ii = 0; ii < numTowns; ii++) {
         paths[ii] = new Array(numTowns).fill(false);
     }
-    paths[0][3] = { controlPoints: [200, 400, 400, 400] };
+    paths[0][3] = { controlPoints: [230, 420, 360, 380] };
     paths[4][6] = { };
     paths[6][14] = { controlPoints: [700, 500] };
 
@@ -213,7 +213,7 @@ Board.prototype.generatePaths = function (towns, ctx) {
             return path;
         }
         var controlPoints = [];
-        for (ii = path.controlPoints.length - 2; ii > 0; ii -= 2) {
+        for (ii = path.controlPoints.length - 3; ii > 0; ii -= 2) {
             var x = path.controlPoints[ii - 1],
                 y = path.controlPoints[ii];
             controlPoints.push(x);
