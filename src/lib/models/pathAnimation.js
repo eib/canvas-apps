@@ -7,11 +7,20 @@ function PathAnimation(renderable, path) {
     this.path = path;
     this.elapsedMillis = 0;
     this.hasStarted = false;
-    this.calculatePosition = this.calculatePositionLinear; //TODO: based on # control points?
+    switch (path.controlPoints.length) {
+        case 6:
+            this.calculatePosition = this.calculatePositionCubic;
+            break;
+        case 4:
+            this.calculatePosition = this.calculatePositionQuadratic;
+            break;
+        default:
+            this.calculatePosition = this.calculatePositionLinear;
+    }
     this.onComplete = function () {}; //TODO: .on('complete', ...);
 }
 
-PathAnimation.prototype.animationDuration = 4000; //ms
+PathAnimation.prototype.animationDuration = 2500; //ms
 
 PathAnimation.prototype.update = function (tick) {
     if (this.hasStarted) {
@@ -39,10 +48,44 @@ PathAnimation.prototype.calculatePositionLinear = function (percentElapsed) {
     };
 };
 PathAnimation.prototype.calculatePositionQuadratic = function (percentElapsed) {
-    return this.path.start;
+    var p1x = this.path.start.x,
+        p1y = this.path.start.y,
+        p2x = this.path.controlPoints[0],
+        p2y = this.path.controlPoints[1],
+        p3x = this.path.controlPoints[2],
+        p3y = this.path.controlPoints[3],
+        percentRemaining = 1 - percentElapsed;
+
+    return {
+        x: percentRemaining * percentRemaining * p1x +
+            2 * percentRemaining * percentElapsed * p2x +
+            percentElapsed * percentElapsed * p3x,
+        y: percentRemaining * percentRemaining * p1y +
+            2 * percentRemaining * percentElapsed * p2y +
+            percentElapsed * percentElapsed * p3y,
+    };
 };
 PathAnimation.prototype.calculatePositionCubic = function (percentElapsed) {
-    return this.path.start;
+    var p1x = this.path.start.x,
+        p1y = this.path.start.y,
+        p2x = this.path.controlPoints[0],
+        p2y = this.path.controlPoints[1],
+        p3x = this.path.controlPoints[2],
+        p3y = this.path.controlPoints[3],
+        p4x = this.path.controlPoints[4],
+        p4y = this.path.controlPoints[5],
+        percentRemaining = 1 - percentElapsed;
+
+    return {
+        x: percentRemaining * percentRemaining * percentRemaining * p1x +
+            3 * percentRemaining * percentRemaining * percentElapsed * p2x +
+            3 * percentRemaining * percentElapsed * percentElapsed * p3x +
+            percentElapsed * percentElapsed * percentElapsed * p4x,
+        y: percentRemaining * percentRemaining * percentRemaining * p1y +
+            3 * percentRemaining * percentRemaining * percentElapsed * p2y +
+            3 * percentRemaining * percentElapsed * percentElapsed * p3y +
+            percentElapsed * percentElapsed * percentElapsed * p4y,
+    };
 };
 
 module.exports = PathAnimation;
