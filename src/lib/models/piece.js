@@ -10,7 +10,7 @@ function Piece(props) {
 Piece.prototype.position = { x: 0, y: 0 };
 Piece.prototype.fillColor = 'red';
 Piece.prototype.selectedFillColor = 'blue';
-Piece.prototype.radius = 5; //maybe an image instead? (or some kind of "shape" geometry?)
+Piece.prototype.radius = 10; //maybe an image instead? (or some kind of "shape" geometry?)
 Piece.prototype.isSelected = false;
 Piece.prototype.town = null;
 

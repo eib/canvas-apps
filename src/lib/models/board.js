@@ -147,8 +147,8 @@ Board.prototype.drawAllPaths = function (ctx) {
 };
 
 Board.prototype.drawPath = function (path, ctx) {
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = '#EEEEAA';
+    ctx.lineWidth = 30;
+    ctx.strokeStyle = '#AAAA77';
     ctx.beginPath();
     ctx.moveTo(path.start.x, path.start.y);
     path.pathMethod.apply(ctx, path.controlPoints);

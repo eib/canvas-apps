@@ -20,14 +20,14 @@ function PathAnimation(renderable, path) {
     this.onComplete = function () {}; //TODO: .on('complete', ...);
 }
 
-PathAnimation.prototype.animationDuration = 2500; //ms
+PathAnimation.prototype.animationDuration = 1750; //ms
 
 PathAnimation.prototype.update = function (tick) {
     if (this.hasStarted) {
         this.elapsedMillis += tick.deltaMillis;
     }
     this.hasStarted = true;
-    var percentElapsed = Math.min(100, Math.max(0, this.elapsedMillis / this.animationDuration));
+    var percentElapsed = this.calculatePercentElapsed();
 
     this.renderable.position = this.calculatePosition(percentElapsed);
     var isComplete = this.elapsedMillis >= this.animationDuration;
@@ -35,6 +35,10 @@ PathAnimation.prototype.update = function (tick) {
         this.onComplete();
     }
     return !isComplete;
+};
+
+PathAnimation.prototype.calculatePercentElapsed = function () {
+    return Math.min(1, Math.max(0, this.elapsedMillis / this.animationDuration));
 };
 
 PathAnimation.prototype.calculatePositionLinear = function (percentElapsed) {
