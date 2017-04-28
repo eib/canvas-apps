@@ -158,11 +158,11 @@ Board.prototype.drawPath = function (path, ctx) {
 /* Board Generation */
 
 Board.prototype.generateTowns = function () {
-    var numTowns = 15;
+    var numTowns = 25;
     var towns = [];
     for (var ii = 0; ii < numTowns; ii++) {
-        var x = Math.floor(ii / 3) * 200 + 200,
-            y = (ii % 3) * 200 + 200,
+        var x = Math.floor(ii / 5) * 150 + 50,
+            y = (ii % 5) * 150 + 50,
             position = { x: x, y: y},
             town = new Town({
                 radius: 25,
@@ -183,9 +183,24 @@ Board.prototype.generatePaths = function (towns, ctx) {
     for (var ii = 0; ii < numTowns; ii++) {
         paths[ii] = new Array(numTowns).fill(false);
     }
-    paths[0][3] = { controlPoints: [230, 420, 360, 380] };
-    paths[4][6] = { };
-    paths[6][14] = { controlPoints: [700, 500] };
+
+    paths[4][7] = {};
+    paths[6][7] = {};
+    paths[7][8] = {};
+    paths[7][10] = {};
+    paths[3][4] = {};
+    paths[3][6] = {};
+    paths[4][5] = {};
+    paths[5][8] = {};
+    paths[6][9] = {};
+    paths[9][10] = {};
+    paths[8][11] = {};
+    paths[10][11] = {};
+    //paths[
+
+    //paths[0][3] = { controlPoints: [230, 420, 360, 380] };
+    //paths[4][6] = {};
+    //paths[6][14] = { controlPoints: [700, 500] };
 
     paths.forEach(function (row, ii) {
         row.forEach(function (path, jj) {
