@@ -7,11 +7,11 @@ function PathAnimation(renderable, path) {
     this.path = path;
     this.elapsedMillis = 0;
     this.hasStarted = false;
-    switch (path.controlPoints.length) {
-        case 6:
+    switch (path.pathOrder) {
+        case 2:
             this.calculatePosition = this.calculatePositionCubic;
             break;
-        case 4:
+        case 1:
             this.calculatePosition = this.calculatePositionQuadratic;
             break;
         default:
@@ -20,7 +20,7 @@ function PathAnimation(renderable, path) {
     this.onComplete = function () {}; //TODO: .on('complete', ...);
 }
 
-PathAnimation.prototype.animationDuration = 1750; //ms
+PathAnimation.prototype.animationDuration = 1000; //ms
 
 PathAnimation.prototype.update = function (tick) {
     if (this.hasStarted) {
@@ -54,10 +54,10 @@ PathAnimation.prototype.calculatePositionLinear = function (percentElapsed) {
 PathAnimation.prototype.calculatePositionQuadratic = function (percentElapsed) {
     var p1x = this.path.start.x,
         p1y = this.path.start.y,
-        p2x = this.path.controlPoints[0],
-        p2y = this.path.controlPoints[1],
-        p3x = this.path.controlPoints[2],
-        p3y = this.path.controlPoints[3],
+        p2x = this.path.controlPoints[0].x,
+        p2y = this.path.controlPoints[0].y,
+        p3x = this.path.end.x,
+        p3y = this.path.end.y,
         percentRemaining = 1 - percentElapsed;
 
     return {
@@ -72,12 +72,12 @@ PathAnimation.prototype.calculatePositionQuadratic = function (percentElapsed) {
 PathAnimation.prototype.calculatePositionCubic = function (percentElapsed) {
     var p1x = this.path.start.x,
         p1y = this.path.start.y,
-        p2x = this.path.controlPoints[0],
-        p2y = this.path.controlPoints[1],
-        p3x = this.path.controlPoints[2],
-        p3y = this.path.controlPoints[3],
-        p4x = this.path.controlPoints[4],
-        p4y = this.path.controlPoints[5],
+        p2x = this.path.controlPoints[0].x,
+        p2y = this.path.controlPoints[0].y,
+        p3x = this.path.controlPoints[1].x,
+        p3y = this.path.controlPoints[1].y,
+        p4x = this.path.end.x,
+        p4y = this.path.end.y,
         percentRemaining = 1 - percentElapsed;
 
     return {

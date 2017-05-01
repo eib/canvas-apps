@@ -1,5 +1,5 @@
-var Town = require('./town'),
-    Piece = require('./piece'),
+var Piece = require('./piece'),
+    Layout = require('./layout'),
     rand = require('../rand'),
     PathAnimation = require('./pathAnimation');
 
@@ -8,8 +8,7 @@ function Board(fx) {
         return new Board(fx);
     }
     this.fx = fx;
-    this.towns = this.generateTowns();
-    this.paths = this.generatePaths(this.towns, fx.ctx); //2D edge matrix (numTowns x numTowns), both halves (top right/bottom left) are populated
+    this.layout = new Layout();
     this.pieces = [];
     this.lastSelectedPiece = null;
     this.lastAnimation = Promise.resolve();
@@ -18,7 +17,7 @@ function Board(fx) {
 /* Events */
 
 Board.prototype.handleSingleClick = function (location) {
-    var selectedTown = this.towns.find(function (town) {
+    var selectedTown = this.layout.findTown(function (town) {
             var distX = town.position.x - location.x,
                 distY = town.position.y - location.y;
             return Math.sqrt(distX * distX + distY * distY) < town.getSelectionRadius();
@@ -83,7 +82,7 @@ Board.prototype.movePieceToTown = function (piece, newTown) {
 };
 
 Board.prototype.getPath = function (town1, town2) {
-    return town1 && town2 && this.paths[town1.index][town2.index];
+    return town1 && town2 && this.layout.getPath(town1.index, town2.index);
 };
 
 Board.prototype.areConnected = function (town1, town2) {
@@ -128,22 +127,13 @@ Board.prototype.drawPieces = function (ctx) {
 };
 
 Board.prototype.drawTowns = function (ctx) {
-    this.towns.forEach(function (town) {
+    this.layout.forEachTown(function (town) {
         town.render(ctx);
     });
 };
 
 Board.prototype.drawAllPaths = function (ctx) {
-    var row, path;
-    for (var ii = 0; ii < this.paths.length; ii++) {
-        row = this.paths[ii];
-        for (var jj = ii; jj < row.length; jj++) {
-            path = row[jj];
-            if (path) {
-                this.drawPath(path, ctx);
-            }
-        }
-    }
+    this.layout.forEachPath((path) => this.drawPath(path, ctx));
 };
 
 Board.prototype.drawPath = function (path, ctx) {
@@ -151,106 +141,8 @@ Board.prototype.drawPath = function (path, ctx) {
     ctx.strokeStyle = '#AAAA77';
     ctx.beginPath();
     ctx.moveTo(path.start.x, path.start.y);
-    path.pathMethod.apply(ctx, path.controlPoints);
+    path.strokeMethod.apply(ctx, path.flattenedControlPoints);
     ctx.stroke();
-};
-
-/* Board Generation */
-
-Board.prototype.generateTowns = function () {
-    var numTowns = 25;
-    var towns = [];
-    for (var ii = 0; ii < numTowns; ii++) {
-        var x = Math.floor(ii / 5) * 150 + 50,
-            y = (ii % 5) * 150 + 50,
-            position = { x: x, y: y},
-            town = new Town({
-                radius: 25,
-                fillColor: '#EEEEAA',
-                position: position,
-                name: 'Town' + ii,
-                magic: (ii % 2) === 0,
-                index: ii,
-            });
-        towns.push(town);
-    }
-    return towns;
-};
-
-Board.prototype.generatePaths = function (towns, ctx) {
-    var numTowns = towns.length;
-    var paths = Array(numTowns);
-    for (var ii = 0; ii < numTowns; ii++) {
-        paths[ii] = new Array(numTowns).fill(false);
-    }
-
-    paths[4][7] = {};
-    paths[6][7] = {};
-    paths[7][8] = {};
-    paths[7][10] = {};
-    paths[3][4] = {};
-    paths[3][6] = {};
-    paths[4][5] = {};
-    paths[5][8] = {};
-    paths[6][9] = {};
-    paths[9][10] = {};
-    paths[8][11] = {};
-    paths[10][11] = {};
-    //paths[
-
-    //paths[0][3] = { controlPoints: [230, 420, 360, 380] };
-    //paths[4][6] = {};
-    //paths[6][14] = { controlPoints: [700, 500] };
-
-    paths.forEach(function (row, ii) {
-        row.forEach(function (path, jj) {
-            var startTown = towns[ii],
-                endTown = towns[jj],
-                controlPoints = path && path.controlPoints || [],
-                strokeMethods = {
-                    2: ctx.lineTo,
-                    4: ctx.quadraticCurveTo,
-                    6: ctx.bezierCurveTo,
-                };
-            controlPoints.push(endTown.position.x);
-            controlPoints.push(endTown.position.y);
-            if (path) {
-                path.start = startTown.position;
-                path.pathMethod = strokeMethods[controlPoints.length] || ctx.lineTo;
-                path.controlPoints = controlPoints;
-                path.end = { x: endTown.position.x, y: endTown.position.y };
-            }
-        });
-    });
-
-    function flipPath(path) {
-        if (!path) {
-            return path;
-        }
-        var controlPoints = [];
-        for (ii = path.controlPoints.length - 3; ii > 0; ii -= 2) {
-            var x = path.controlPoints[ii - 1],
-                y = path.controlPoints[ii];
-            controlPoints.push(x);
-            controlPoints.push(y);
-        }
-        controlPoints.push(path.start.x);
-        controlPoints.push(path.start.y);
-
-        return { //TODO: Path.prototype.flip()
-            start: path.end,
-            end: path.start,
-            pathMethod: path.pathMethod,
-            controlPoints: controlPoints,
-        };
-    }
-    for (var rowIndex = 0; rowIndex < paths.length; rowIndex++) {
-        var row = paths[rowIndex];
-        for (var columnIndex = rowIndex; columnIndex < row.length; columnIndex++) {
-            paths[columnIndex][rowIndex] = flipPath(paths[rowIndex][columnIndex]);
-        }
-    }
-    return paths;
 };
 
 module.exports = Board;
