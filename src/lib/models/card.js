@@ -1,3 +1,5 @@
+//Depending on the "game engine", you could have a completely different set of card properties
+//This is currently a "SpellMaker" card class
 function Card(props) {
     if (!(this instanceof Card)) {
         return new Card(props);
