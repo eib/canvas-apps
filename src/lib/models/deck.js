@@ -7,6 +7,11 @@ function Deck() {
     this.cards = [];
 }
 
+Deck.prototype.fill = function (cards) {
+    cards.forEach((card) => this.cards.push(card));
+    this.shuffle();
+};
+
 Deck.prototype.shuffle = function () {
     arrays.shuffle(this.cards);
 };

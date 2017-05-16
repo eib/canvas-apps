@@ -6,7 +6,14 @@ function Hand() {
 }
 
 Hand.prototype.refill = function (deck) {
-    //TODO: drawOne? refill to handSize? etc
+    while (this.cards.length < this.handSize) {
+        this.cards.push(deck.drawOne());
+    }
+};
+
+Hand.prototype.discard = function (discardPile, card) {
+    this.cards.splice(this.cards.indexOf(card), 1);
+    discardPile.add(card);
 };
 
 Hand.prototype.handSize = 1;
