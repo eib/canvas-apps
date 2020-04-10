@@ -9,7 +9,7 @@ require('./rendering');
 
 module.exports = function (canvas) {
     var ctx = canvas.getContext('2d'),
-        fx = FX(ctx),
+        fx = new FX(ctx),
         board = new Board(fx),
         game = new Game();
 

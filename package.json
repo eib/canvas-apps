@@ -1,26 +1,25 @@
 {
-  "name": "FX",
+  "name": "canvas-apps",
   "version": "1.0.0",
   "description": "FX",
   "main": "src/main.js",
-  "scripts": {
-    "test": "make test"
-  },
   "keywords": [
-    "SpecialFX",
     "Canvas"
   ],
   "author": "Ethan Blackwelder <ethan@eblackwelder.com>",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "FX": "git://github.com/eib/FX",
     "PHYSX": "git://github.com/eib/PHYSX",
-    "bower": "^1.3.12",
-    "color": "^0.7.3",
-    "del": "^1.1.0",
+    "animitter": "^3.0.0",
+    "concurrently": "^5.1.0",
     "extend": "^2.0.0",
-    "gulp": "^3.8.10",
-    "gulp-smoosher": "0.0.7",
+    "gulp": "^4.0.2",
     "webpack": "^2.2.1"
+  },
+  "scripts": {
+    "build": "concurrently gulp webpack",
+    "watch": "concurrently  \"gulp watch\" \"webpack --watch\"",
+    "test": "echo \"No tests defined.\""
   }
 }
